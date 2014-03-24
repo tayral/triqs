@@ -128,9 +128,10 @@ namespace gfs {
     h5_write(gr, "min", Fermion ? M_PI / beta : 0);
     h5_write(gr, "max", ((Fermion ? 1 : 0) + 2 * m.size()) * M_PI / beta);
     h5_write(gr, "kind", 2);
-   } else { // A strange way : to preserve backward compatibility for old archive.
-    h5_write(gr, "start_at_0", m._positive_only);
-   }
+   } 
+   // A strange way : to preserve backward compatibility for old archive.
+   h5_write(gr, "start_at_0", m._positive_only);
+   
   }
 
   /// Read from HDF5
