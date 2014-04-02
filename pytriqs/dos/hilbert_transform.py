@@ -62,7 +62,7 @@ class HilbertTransform :
         R[-1] *= (eps[-1] - eps[-2])
         for i in xrange(1, eps.shape[0] - 1) : 
             R[i] *=  (eps[i+1] - eps[i])/2+(eps[i] - eps[i-1])/2
-        R /= numpy.sum(R) 
+#R /= numpy.sum(R) 
      
     #-------------------------------------------------------------
 
