@@ -48,7 +48,7 @@ namespace gfs {
    h5::group gr = fg.create_group(subgroup_name);
    h5_write(gr, "n_max", d.Nmax);
    h5_write(gr, "beta", d.beta);
-   h5_write(gr, "statistic", (d.statistic == Fermion ? "F" : "B"));
+   h5_write(gr, "statistic", std::string(d.statistic == Fermion ? "F" : "B"));
   }
 
   /// Read from HDF5
