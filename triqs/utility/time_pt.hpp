@@ -42,7 +42,7 @@ namespace triqs { namespace utility {
   public : 
 
  // random case : to be improved, using rng only for integer for reproducibility....
-  template<typename RNG, typename T1, typename T2> static time_pt random(RNG & rng, T1 l, T2 beta_) { return time_pt(rng(double(l)), double(beta_));}
+  template<typename RNG, typename T1, typename T2> static time_pt random(RNG & rng, T1 l, T2 beta_) {  return time_pt(rng(l.n), double(beta_), true);  }
 
   time_pt (time_pt const &) = default;
   time_pt (time_pt && x) = default;
