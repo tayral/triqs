@@ -105,8 +105,10 @@ void test_2(){
  auto gw = gf<imfreq>{{beta, Fermion, N, false}, {1, 1}};
  gw(iom_) << 1/(iom_-1);
 
- size_t wn_min=50; //frequency to start the fit
- size_t wn_max=90; //final fitting frequency (included)
+ //size_t wn_min=50; //frequency to start the fit
+ //size_t wn_max=90; //final fitting frequency (included)
+ int wn_min=-90; //frequency to start the fit
+ int wn_max=-50; //final fitting frequency (included)
  int n_moments=4;  //number of moments in the final tail (including known ones)
  int  size=1; //means that we know one moment
  int order_min=1; //means that the first moment in the final tail will be the first moment
