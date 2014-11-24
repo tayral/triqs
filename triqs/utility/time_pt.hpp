@@ -81,6 +81,7 @@ namespace triqs { namespace utility {
 
   // only EXPLICIT cast
   explicit operator double() const {return val;} // cast to a double
+  uint64_t get_n() const {return n;}
 
   friend std::ostream & operator<< (std::ostream & out, time_pt const & p) { return out << p.val << " [time_pt : beta = "<< p.beta<< " n = "<< p.n<<"]" ; }
  
