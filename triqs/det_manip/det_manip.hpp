@@ -733,7 +733,7 @@ namespace triqs { namespace det_manip {
      mat_inv(R,w1.ireal) *= -w1.ksi; 
     }
     //------------------------------------------------------------------------------------------
-   private: 
+   public: 
 
     void check_mat_inv (double precision_warning=1.e-8, double precision_error=1.e-5) { 
      if (N==0) return;
