@@ -26,7 +26,7 @@ It is imported with the command::
   >>> from pytriqs.gf.local import *
 """
 
-from gf import TailGf, MeshImFreq
+from gf import TailGf, MeshImFreq, MeshImTime
 
 from inverse import inverse
 from gf_imfreq import GfImFreq
@@ -39,5 +39,5 @@ from gf_legendre import GfLegendre
 from block_gf import BlockGf
 from descriptors import Omega, iOmega_n, SemiCircular, Wilson, Fourier, InverseFourier, LegendreToMatsubara, MatsubaraToLegendre
 
-__all__ = ['Omega','iOmega_n','SemiCircular','Wilson','Fourier','InverseFourier','LegendreToMatsubara','MatsubaraToLegendre','lazy_expressions','TailGf','GfImFreq','GfImTime','GfReFreq','GfReTime','GfLegendre','BlockGf','inverse', 'MeshImFreq'] #,'GfTwoRealTime']
+__all__ = ['Omega','iOmega_n','SemiCircular','Wilson','Fourier','InverseFourier','LegendreToMatsubara','MatsubaraToLegendre','lazy_expressions','TailGf','GfImFreq','GfImTime','GfReFreq','GfReTime','GfLegendre','BlockGf','inverse', 'MeshImFreq', 'MeshImTime'] #,'GfTwoRealTime']
 
