@@ -15,7 +15,7 @@ assert len(mprod.components[1])==len(m2), "not ok: %s"%len(mprod.components[1])
 ######### scalar-valued ################
 ########################################
 ##construct two-freq Gf
-g=GfImFreq_x_ImFreq_s(mesh=mprod)
+g=GfImFreq_x_ImFreq_s(mesh=mprod, shape = [])
 
 assert g.mesh.size==mprod.size, "not ok"
 assert len(g.slice_at_const_w1(4).mesh)==len(m2), "not ok"
@@ -52,7 +52,7 @@ g=GfImFreq_x_ImFreqTv3(mprod, [1,1,1])
 assert g.data.shape==(200,199, 1, 1,1)
 assert g.slice_at_const_w1(4).data.shape==(199,1,1,1)
 assert g.slice_at_const_w2(4).data.shape==(200,1,1,1)
-print g.tail
+#print g.tail
 #print evaluate(g.tail,0)
 
 #G=BlockGfImFreq_x_ImFreq_s(["ch","sp"])

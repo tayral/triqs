@@ -94,11 +94,7 @@ namespace gfs {
 
   long get_interpolation_data(interpol_t::None, long n) const { return n;}
  
-#ifndef TRIQS_CPP11 
   template <typename F> auto evaluate(interpol_t::None, F const &f, long n) const { return f[n]; }
-#else
-  template <typename F> auto evaluate(interpol_t::None, F const &f, long n) const RETURN(f[n]);
-#endif
   // -------------------- MPI -------------------
   
   // -------------------- HDF5 -------------------
