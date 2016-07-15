@@ -228,13 +228,16 @@ module.add_class(m)
 
 m = make_mesh( py_type = "MeshBrillouinZone", c_tag = "brillouin_zone", is_im = True)
 m.add_constructor(signature = "(triqs::lattice::brillouin_zone b, int n_k)")
+m.add_constructor(signature = "(triqs::lattice::brillouin_zone b, matrix_view<int> periodization_matrix)")
+m.add_method(name="locate_neighbours", signature="triqs::utility::mini_vector<int,3> locate_neighbours(triqs::arrays::vector<double> x)")
+m.add_method(name="index_to_linear", signature="long index_to_linear(triqs::utility::mini_vector<int,3> x)")
 module.add_class(m)
 
 ########################
 ##   Gf Generic : common to all 5 one variable gf
 ########################
 
-def make_gf( py_type, c_tag, is_im = False, has_tail = True, target_type = "matrix_valued", serializable=True) :
+def make_gf( py_type, c_tag, is_im = False, has_tail = True, target_type = "matrix_valued", serializable=True, point_type='double') :
     """
     :param py_type: python type name
     :param c_tag: descriptor name (in c++) (e.g. imfreq)
@@ -242,6 +245,7 @@ def make_gf( py_type, c_tag, is_im = False, has_tail = True, target_type = "matr
     :param has_tail: True if has a tail
     :param target_type: matrix_valued/tensor_valued<N>
     :param serializable: bool
+    :param point_type: type of the argument of the call method 
     """
 
     rank = 2 if target_type == "matrix_valued" else int(re.compile("tensor_valued<(.*)>").match(target_type).groups()[0])
@@ -317,7 +321,7 @@ def make_gf( py_type, c_tag, is_im = False, has_tail = True, target_type = "matr
     # ()
     g.add_method(name = "__call__",
                  calling_pattern = "%s result = self_c(n)"%(return_type),
-                 signature = "%s(double n)"%return_type,
+                 signature = "%s(%s n)"%(return_type, point_type),
                  doc = "Call operator")
 
     # []
@@ -501,6 +505,7 @@ g = make_gf(
        target_type = "matrix_valued",
        has_tail=False,
        serializable=True,
+       point_type = "triqs::utility::mini_vector<int, 3>",
        )
 module.add_class(g)
 
