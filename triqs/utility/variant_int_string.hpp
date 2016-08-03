@@ -133,22 +133,10 @@ namespace utility {
   }
 
   // printing
-#ifdef TRIQS_CPP11
-  struct print_visitor {
-   std::ostream& os;
-   template <typename T> void operator()(T const& x) const { os << x; }
-  };
-
-  friend std::ostream & operator << (std::ostream & out, variant_int_string const &x) {
-   apply_visitor(print_visitor{out},x);
-   return out;
-  }
-#else
   friend std::ostream & operator << (std::ostream & out, variant_int_string const &x) {
     apply_visitor([&out](auto const &u) mutable { out << u;}, x);
     return out;
    }
-#endif
 
  };
 

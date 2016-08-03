@@ -113,12 +113,7 @@ namespace gfs {
    return locate_neighbours(k);
   }
 
-  template<typename F>
-  auto evaluate(default_interpol_policy, F const & f, lattice::k_t const &k) const 
-#ifdef TRIQS_CPP11 
-->std14::decay_t<decltype(f[0])> 
-#endif
-  {
+  template <typename F> auto evaluate(default_interpol_policy, F const& f, lattice::k_t const& k) const {
    auto id = get_interpolation_data(default_interpol_policy{}, k);
    return f[id];
   }
