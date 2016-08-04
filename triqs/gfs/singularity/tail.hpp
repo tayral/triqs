@@ -185,9 +185,9 @@ namespace gfs {
 
 
   /// Construct from the target shape. Initialized to 0.
-  template <int R, typename Int> explicit __tail(mini_vector<Int, R> sh) : _data(sh.front_append(_size())) { zero(); }
+  template <typename Int> explicit __tail(mini_vector<Int, T::rank> sh) : _data(sh.front_append(_size())) { zero(); }
 
-  template <typename Int> explicit __tail(mini_vector<Int, 0>) : _data(_size()) { zero(); }
+  // template <typename Int> explicit __tail(mini_vector<Int, 0>) : _data(_size()) { zero();}
 
   /**
     * @param sh target shape.
@@ -199,7 +199,7 @@ namespace gfs {
     *
     * Tail is initialized to 0 for n <= o_min + n_orders and NaN afterwards.
     */
-  template <int R, typename Int> explicit __tail(mini_vector<Int, R> sh, int n_orders, int o_min) : __tail{sh} {
+  template <typename Int> explicit __tail(mini_vector<Int, T::rank> sh, int n_orders, int o_min) : __tail{sh} {
    if (o_min < order_min()) TRIQS_RUNTIME_ERROR << "Tail construction : o_min is < " << order_min();
    reset(o_min + n_orders + 1);
   }
@@ -223,7 +223,7 @@ namespace gfs {
    constexpr int n_args = sizeof...(Args) + 1;
    static_assert((n_args - T::rank == 2) or ((n_args - T::rank == 0)), "Too many arguments in tail construction");
    mini_vector<int, T::rank> shape;
-   mini_vector<int, n_args> _args{n0, args...};
+   mini_vector<int, n_args> _args{n0, int(args)...};
    for (int i = 0; i < T::rank; ++i) shape[i] = _args[i];
    *this = (n_args == T::rank ? __tail{shape} : __tail{shape, _args[n_args - 2], _args[n_args - 1]});
   }
@@ -979,7 +979,7 @@ namespace gfs {
 #endif
   for (int u = t.order_max(); u >= t.order_min(); --u)
    r = r / omega + rv_t{t.data()(u - t.order_min(), ellipsis())}; // need to make a matrix view because otherwise + is not defined
-  r /= pow(omega, t.order_min());
+  r /= std::pow(omega, t.order_min());
   return r;
  }
 
