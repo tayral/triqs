@@ -160,7 +160,7 @@ template <typename Variable> struct py_converter<triqs::gfs::gf_view<Variable, t
  }
 
  static c_t py2c(PyObject *ob) {
-  return slice_target_to_scalar(conv::py2c(ob),0,0);
+  return gfs::slice_target_to_scalar(conv::py2c(ob),0,0); // qualif gfs:: necessary for gcc 5
  }
 };
 
