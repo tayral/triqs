@@ -33,25 +33,29 @@ namespace gfs {
  //---------------------------- tensor valued ---------------------------------
  template <int R> struct _data_proxy<tensor_valued<R>> {
 
+  template<typename S,typename X> FORCEINLINE static auto invoke(S&data, X const & x) { return arrays::make_array_proxy(data, x); }
+
   // one var
-  template <typename S> static auto invoke(S& data, long i) { return arrays::make_array_proxy(data, i); }
+  //template <typename S> static auto invoke(S& data, long i) { return arrays::make_array_proxy(data, i); }
 
   // multi var
-  template <typename S, typename... Int> static decltype(auto) invoke(S& data, std::tuple<Int...> const& i) {
-   return arrays::make_array_proxy(data, i);
-  }
+  //template <typename S, typename... Int> static auto invoke(S& data, std::tuple<Int...> const& i) {
+  // return arrays::make_array_proxy(data, i);
+  //}
  };
 
  //---------------------------- matrix valued ---------------------------------
  template <> struct _data_proxy<matrix_valued> {
+  
+  template <typename S, typename X> FORCEINLINE static auto invoke(S& data, X const& x) { return arrays::make_matrix_proxy(data, x); }
 
   // one var
-  template <typename S> static auto invoke(S& data, long i) { return arrays::make_matrix_proxy(data, i); }
+  //template <typename S> static auto invoke(S& data, long i) { return arrays::make_matrix_proxy(data, i); }
 
   // multi var
-  template <typename S, typename... Int> static decltype(auto) invoke(S& data, std::tuple<Int...> const& i) {
-   return arrays::make_matrix_proxy(data, i);
-  }
+  //template <typename S, typename... Int> static auto invoke(S& data, std::tuple<Int...> const& i) {
+  // return arrays::make_matrix_proxy(data, i);
+  //}
  };
  //---------------------------- scalar valued ---------------------------------
  template <> struct _data_proxy<scalar_valued> {
