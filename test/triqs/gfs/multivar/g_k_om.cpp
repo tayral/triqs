@@ -80,7 +80,7 @@ TEST(Gf, GkOmSlice) {
  auto gs1 = slice_target(G, range(0, 1), range(0, 1));
 
  // do not allow this
- //auto gs2 = slice_target(G, 0, 0);
+ auto gs2 = slice_target_to_scalar(G, 0, 0);
 }
 
 

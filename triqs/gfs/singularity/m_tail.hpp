@@ -59,7 +59,7 @@ namespace gfs {
 
  /// ---------------------------  User alias  ---------------------------------
 
- template <typename M> using m_tail = gf<M, tail_valued<matrix_valued>>;
+ template <typename M, typename Ta> using m_tail = gf<M, tail_valued<Ta>>;
 
  template <typename Var, typename Tu, size_t... Is>
  auto __evaluate_m_tail_impl(gf_const_view<Var, tail_valued<matrix_valued>> const &g, Tu const &tu, std14::index_sequence<Is...>) {
@@ -73,44 +73,45 @@ namespace gfs {
  template <typename Var, typename... Args> auto evaluate(gf<Var, tail_valued<matrix_valued>> const &g, Args const &... args) {
   return evaluate(g(), args...);
  }
- template <typename Var, typename... Args> auto evaluate(gf_view<Var, tail_valued<matrix_valued>> const &g, Args const &... args) {
+ template <typename Var, typename... Args>
+ auto evaluate(gf_view<Var, tail_valued<matrix_valued>> const &g, Args const &... args) {
   return evaluate(g(), args...);
  }
 
 
- // TEMPO FIX 
- //
-
+ // FIXME
  template <typename M, typename Ta, typename... Args>
  auto slice_target_sing(gf_view<M, tail_valued<Ta>> g, Args const &... args) {
-  return slice_target(g, args...);
+  return g.apply_on_data([&args...](auto &&d) { return d(arrays::ellipsis(), args...); }, [](auto &&) { return nothing{}; });
  }
 
+ template <typename M, typename Ta, typename... Args>
+ auto slice_target_to_scalar_sing(gf_view<M, tail_valued<Ta>> g, Args const &... args) {
+  return g.apply_on_data([&args...](auto &&d) { return d(arrays::ellipsis(), args...); }, [](auto &&) { return nothing{}; });
+ }
 
-
-
-
- template <> struct gf_singularity<cartesian_product<brillouin_zone, imfreq>, matrix_valued> {
-  using type = m_tail<brillouin_zone>;
+ 
+ 
+ 
+ template <typename Ta> struct gf_singularity<cartesian_product<brillouin_zone, imfreq>, Ta> {
+  using type = m_tail<brillouin_zone, Ta>;
  };
 
- template <> struct gf_singularity<cartesian_product<cyclic_lattice, imfreq>, matrix_valued> {
-  using type = m_tail<cyclic_lattice>;
+ template <typename Ta> struct gf_singularity<cartesian_product<cyclic_lattice, imfreq>, Ta> {
+  using type = m_tail<cyclic_lattice, Ta>;
  };
 
- template <> struct gf_singularity<cartesian_product<brillouin_zone, imtime>, matrix_valued> {
-  using type = m_tail<brillouin_zone>;
+ template <typename Ta> struct gf_singularity<cartesian_product<brillouin_zone, imtime>, Ta> {
+  using type = m_tail<brillouin_zone, Ta>;
  };
 
- template <> struct gf_singularity<cartesian_product<cyclic_lattice, imtime>, matrix_valued> {
-  using type = m_tail<cyclic_lattice>;
+ template <typename Ta> struct gf_singularity<cartesian_product<cyclic_lattice, imtime>, Ta> {
+  using type = m_tail<cyclic_lattice, Ta>;
  };
 
 
-
-
- template <typename V> struct gf_singularity_factory<m_tail<V>> {
-  template <typename M, typename T> static m_tail<V> make(M const &m, T const &shape) {
+ template <typename V, typename Ta> struct gf_singularity_factory<m_tail<V, Ta>> {
+  template <typename M, typename T> static m_tail<V, Ta> make(M const &m, T const &shape) {
    return {std::get<0>(m.components()), shape};
   }
  };

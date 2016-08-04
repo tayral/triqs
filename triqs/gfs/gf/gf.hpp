@@ -770,13 +770,13 @@ namespace gfs {
 
   // build a zero from a slice of data
   // MUST be static since it is used in constructors... (otherwise bug in clang)
-  template <typename T> static zero_t __make_zero(T, data_t const &d) {
+  static zero_t __make_zero(std::false_type, data_t const &d) {
    auto r = zero_regular_t{d.shape().template front_mpop<arity>()};
    r() = 0;
    return r;
   }
-  static zero_t __make_zero(scalar_valued, data_t const &d) { return 0; } // special case
-  static zero_t _make_zero(data_t const &d) { return __make_zero(Target{}, d); }
+  static zero_regular_t __make_zero(std::true_type, data_t const &d) { return 0; } // special case
+  static zero_t _make_zero(data_t const &d) { return __make_zero(std::is_same<zero_regular_t, scalar_t>{}, d); }
   zero_t _remake_zero() { return _zero = _make_zero(_data); } // NOT in constructor...
 
   template <typename G>

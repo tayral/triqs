@@ -33,7 +33,7 @@ namespace gfs {
   static v_t make_vt(int L) {
    v_t res;
    res.reserve(L);
-   for (int i = 0; i < L; ++i) res.emplace_back(std::to_string(i));
+   for (int i = 0; i < L; ++i) res.push_back(std::to_string(i));
    return res;
   }
 
@@ -47,13 +47,16 @@ namespace gfs {
   /// from a std::vector<std::vector<std::string>>
   gf_indices(vv_t x) : _data(std::move(x)) {}
 
-  /// from a shape
+  /// from a shape, make a list of indices '0,1,2,...,r' in all dimensions
   template <int R, typename Int> gf_indices(arrays::mini_vector<Int, R> const &shape) {
    _data.reserve(R);
    for (int i = 0; i < R; i++) _data.push_back(make_vt(shape[i]));
   }
 
-  /// 
+  /// Access to one of the index list
+  decltype(auto) operator[](int i) const { return _data[i]; }
+
+  /// Data access
   vv_t const & data() const  { return _data;}
 
   /// True iif it is empty
@@ -70,9 +73,6 @@ namespace gfs {
 
   /// True iif the gf_indices is not empty and has the shape sh
   template <int R, typename Int> bool has_shape(arrays::mini_vector<Int, R> const &sh) {
-   //std::cout << " shape " << sh  <<std::endl;
-   //std::cout << " data size "<< _data.size() << std::endl;
-   //for (auto &x : _data) std::cout << "          size " << x.size() << std::endl struct  { };;
    if (empty()) return false;
    if (_data.size() != R) return false;
    for (int i = 0; i < R; i++)
@@ -89,37 +89,40 @@ namespace gfs {
    TRIQS_RUNTIME_ERROR << "Cannot find this string index for the Green's function";
   }
 
-  /// access to one of the index list
-  decltype(auto) operator[](int i) const { return _data[i]; }
-
-  private:
-  template <typename Tu, size_t... Is> vv_t _slice_impl(std14::index_sequence<Is...>, Tu const &tu) const {
-
-   // slice one vector with the range r
-   auto slice_one_vec = [](auto const &v, arrays::range const &r) {
-    v_t res;
-    for (auto i : r) res.push_back(v[i]);
-    return res;
-   };
-
-   return vv_t{slice_one_vec(_data[Is], std::get<Is>(tu))...};
-  }
-
-  public:
-  /// Slicing. R are expected to be arrays::range
-  template <typename... R> friend gf_indices slice(gf_indices const &gi, R const &... r) {
-   if (gi.empty()) return {};
-   if (gi.rank() != sizeof...(R)) TRIQS_RUNTIME_ERROR << " Incorrect slicing of indices ";
-   return {gi._slice_impl(std14::index_sequence_for<R...>{}, std::make_tuple(r...))};
-  }
-
+ 
   friend void h5_write(h5::group fg, std::string subgroup_name, gf_indices const &g);
   friend void h5_read(h5::group fg, std::string subgroup_name, gf_indices &g);
 
   friend class boost::serialization::access;
   template <class Archive> void serialize(Archive &ar, const unsigned int version) { ar &_data; }
- };
 
+  // ------------------  implement slicing -------------------------
+  private:
+  // slice one vector with the range r
+  int slice_one_vec(vv_t &v_out, v_t const &v_in, arrays::range const &r) const {
+   v_t res;
+   for (auto i : r) res.push_back(v_in[i]);
+   v_out.push_back(res);
+   return 0;
+  }
+  // do nothing
+  int slice_one_vec(vv_t &v_out, v_t const &v_in, long r) const { return 0; }
+
+  template <typename Tu, size_t... Is> vv_t slice_impl(std14::index_sequence<Is...>, Tu const &tu) const {
+   vv_t res;
+   // rely on init order. gcc >=5.1 MANDATORY (bug in 4.9).
+   std::vector<int>{slice_one_vec(res, _data[Is], std::get<Is>(tu))...};
+   return res;
+  }
+  
+  public:
+  /// Slicing. R are expected to be arrays::range
+  template <typename... R> friend gf_indices slice(gf_indices const &gi, R const &... r) {
+   if (gi.empty()) return {};
+   if (gi.rank() != sizeof...(R)) TRIQS_RUNTIME_ERROR << " Incorrect slicing of indices ";
+   return {gi.slice_impl(std14::index_sequence_for<R...>{}, std::make_tuple(r...))};
+  }
+ };
  }
 }
 

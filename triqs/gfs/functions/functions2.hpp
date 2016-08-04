@@ -25,13 +25,6 @@ namespace gfs {
 
  using triqs::arrays::array_const_view;
 
- // The code below is simple and short, but in some cases it does not compile on gcc 5.
- // temporarily leave the old, more verbose code in that case.
-#if defined GCC_VERSION && GCC_VERSION < 60100
-//#warning "workaround gcc <6"
-#include "./workaround_gcc.hpp"
-#else
-
  /*------------------------------------------------------------------------------------------------------
  *                      Slicing the matrix_valued/matrix_real_valued into a matrix
  *-----------------------------------------------------------------------------------------------------*/
@@ -42,14 +35,23 @@ namespace gfs {
                          [&args...](auto &&i) { return slice(i, args...); });
  }
 
+ // FIXME ADD apply_on _dato to TAIL !
+ /*
+ template <typename G, typename... Args> auto slice_target_sing(G &&g, Args &&... args) {
+  return g.apply_on_data([&args...](auto &&d) { return d(arrays::ellipsis(), args...); }, nothing{});
+ }
+*/
+
  /*------------------------------------------------------------------------------------------------------
   *                      Slicing the matrix valued into a scalar
   *-----------------------------------------------------------------------------------------------------*/
+
+
  template <typename G, typename... Args> auto slice_target_to_scalar(G &&g, Args &&... args) {
-  auto r = g.apply_on_data([&args...](auto &&d) { return d(arrays::range(), args...); },
-                           [&args...](auto &&s) { return slice_target_to_scalar_sing(s, args...); });
-  static_assert(std::is_same<typename decltype(r)::target_t, scalar_valued>::value,
-                "slice_target_to_scalar : the result is not a scalar valued function");
+  auto r = g.apply_on_data([&args...](auto &&d) { return d(arrays::ellipsis(), args...); },
+                           [&args...](auto &&s) { return slice_target_to_scalar_sing(s(), args...); },
+                           [&args...](auto &&i) { return slice(i, args...); });
+  // The target of the return is scalar_valued or tail_valued<scalar_valued>
   return r;
  }
 
@@ -64,7 +66,6 @@ namespace gfs {
   return g.apply_on_data([](auto &&d) { return reinterpret_array_add_1x1(d); },
                          [](auto &&s) { return reinterpret_as_matrix_valued_sing(s()); });
  }
-#endif
 
  /*------------------------------------------------------------------------------------------------------
   *                      Inversion
