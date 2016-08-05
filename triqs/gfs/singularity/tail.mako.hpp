@@ -174,6 +174,9 @@ namespace gfs {
   data_t &data() { return _data; }
   data_t const &data() const { return _data; }
 
+  /// 
+  arrays::mini_vector<int, T::rank> target_shape() const { return _data.shape().front_pop();}
+
   /// true if the tail decreasing at infinity
   bool is_decreasing_at_infinity() const { return (smallest_nonzero() >= 1); } // if nan, it is <0, so false. ok
 
