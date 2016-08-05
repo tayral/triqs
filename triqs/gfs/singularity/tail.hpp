@@ -354,19 +354,27 @@ namespace gfs {
   /// read from h5
   friend void h5_read(h5::group fg, std::string subgroup_name, __tail &t) {
    auto gr = fg.open_group(subgroup_name);
-   int omin = h5::h5_read<int>(gr, "omin");
-   typename data_t::regular_type d;
-   h5_read(gr, "data", d);
-   if (omin < t.order_min()) TRIQS_RUNTIME_ERROR << "Reading h5 file for a tail : order_min is < -2 which is not permitted";
-   auto sh = d.shape();
-   sh[0] = t._size();
-   t._data.resize(sh);
-   t._data() = 0;
-   int omax = std::min(omin + int(d.shape()[0]) - 1, t.order_max());
-   // std::cout << "omax" << omax << std::endl;
-   // std::cout << "omax" << omin << t._data.shape() << std::endl;
-   // std::cout << omin - t.order_min() <<" ---- "<< omax + 1 - t.order_min()<< " ---"<<  omax - omin + 2 << std::endl;
-   t._data(range(omin - t.order_min(), omax + 1 - t.order_min()), ellipsis()) = d(range(0, omax - omin + 1), ellipsis());
+   if (!gr.has_key("mask")) {     // if no mask, we have the latest version of the tail
+    h5_read(gr, "data", t._data); // Add here backward compat code IF order_min/max where to change
+   } else {
+    // backward compatibility code
+    int omin = h5::h5_read<int>(gr, "omin");
+    auto d = h5::h5_read<typename data_t::regular_type>(gr, "data");
+    if (omin < t.order_min()) TRIQS_RUNTIME_ERROR << "Reading h5 file for a tail : order_min is < -2 which is not permitted";
+    auto sh = d.shape();
+    sh[0] = t._size();
+    resize_or_check_if_view(t._data, sh);
+    auto mask_arr = h5::h5_read<array<int, 2>>(gr, "mask");
+    auto m = min_element(mask_arr);
+    int omax = std::min(m, t.order_max());
+    // int omax = std::min(omin + int(d.shape()[0]) - 1, t.order_max());
+    // std::cout << "omax" << omax << std::endl;
+    // std::cout << "omax" << omin << t._data.shape() << std::endl;
+    // std::cout << omin - t.order_min() <<" ---- "<< omax + 1 - t.order_min()<< " ---"<<  omax - omin + 2 << std::endl;
+    auto _ = ellipsis();
+    t.reset(omax + 1);
+    t._data(range(omin - t.order_min(), omax + 1 - t.order_min()), _) = d(range(0, omax - omin + 1), _);
+   }
   }
 
   /// BOOST Serialization
@@ -623,19 +631,27 @@ namespace gfs {
   /// read from h5
   friend void h5_read(h5::group fg, std::string subgroup_name, __tail_view &t) {
    auto gr = fg.open_group(subgroup_name);
-   int omin = h5::h5_read<int>(gr, "omin");
-   typename data_t::regular_type d;
-   h5_read(gr, "data", d);
-   if (omin < t.order_min()) TRIQS_RUNTIME_ERROR << "Reading h5 file for a tail : order_min is < -2 which is not permitted";
-   auto sh = d.shape();
-   sh[0] = t._size();
-   t._data.resize(sh);
-   t._data() = 0;
-   int omax = std::min(omin + int(d.shape()[0]) - 1, t.order_max());
-   // std::cout << "omax" << omax << std::endl;
-   // std::cout << "omax" << omin << t._data.shape() << std::endl;
-   // std::cout << omin - t.order_min() <<" ---- "<< omax + 1 - t.order_min()<< " ---"<<  omax - omin + 2 << std::endl;
-   t._data(range(omin - t.order_min(), omax + 1 - t.order_min()), ellipsis()) = d(range(0, omax - omin + 1), ellipsis());
+   if (!gr.has_key("mask")) {     // if no mask, we have the latest version of the tail
+    h5_read(gr, "data", t._data); // Add here backward compat code IF order_min/max where to change
+   } else {
+    // backward compatibility code
+    int omin = h5::h5_read<int>(gr, "omin");
+    auto d = h5::h5_read<typename data_t::regular_type>(gr, "data");
+    if (omin < t.order_min()) TRIQS_RUNTIME_ERROR << "Reading h5 file for a tail : order_min is < -2 which is not permitted";
+    auto sh = d.shape();
+    sh[0] = t._size();
+    resize_or_check_if_view(t._data, sh);
+    auto mask_arr = h5::h5_read<array<int, 2>>(gr, "mask");
+    auto m = min_element(mask_arr);
+    int omax = std::min(m, t.order_max());
+    // int omax = std::min(omin + int(d.shape()[0]) - 1, t.order_max());
+    // std::cout << "omax" << omax << std::endl;
+    // std::cout << "omax" << omin << t._data.shape() << std::endl;
+    // std::cout << omin - t.order_min() <<" ---- "<< omax + 1 - t.order_min()<< " ---"<<  omax - omin + 2 << std::endl;
+    auto _ = ellipsis();
+    t.reset(omax + 1);
+    t._data(range(omin - t.order_min(), omax + 1 - t.order_min()), _) = d(range(0, omax - omin + 1), _);
+   }
   }
 
   /// BOOST Serialization
@@ -867,19 +883,27 @@ namespace gfs {
   /// read from h5
   friend void h5_read(h5::group fg, std::string subgroup_name, __tail_const_view &t) {
    auto gr = fg.open_group(subgroup_name);
-   int omin = h5::h5_read<int>(gr, "omin");
-   typename data_t::regular_type d;
-   h5_read(gr, "data", d);
-   if (omin < t.order_min()) TRIQS_RUNTIME_ERROR << "Reading h5 file for a tail : order_min is < -2 which is not permitted";
-   auto sh = d.shape();
-   sh[0] = t._size();
-   t._data.resize(sh);
-   t._data() = 0;
-   int omax = std::min(omin + int(d.shape()[0]) - 1, t.order_max());
-   // std::cout << "omax" << omax << std::endl;
-   // std::cout << "omax" << omin << t._data.shape() << std::endl;
-   // std::cout << omin - t.order_min() <<" ---- "<< omax + 1 - t.order_min()<< " ---"<<  omax - omin + 2 << std::endl;
-   t._data(range(omin - t.order_min(), omax + 1 - t.order_min()), ellipsis()) = d(range(0, omax - omin + 1), ellipsis());
+   if (!gr.has_key("mask")) {     // if no mask, we have the latest version of the tail
+    h5_read(gr, "data", t._data); // Add here backward compat code IF order_min/max where to change
+   } else {
+    // backward compatibility code
+    int omin = h5::h5_read<int>(gr, "omin");
+    auto d = h5::h5_read<typename data_t::regular_type>(gr, "data");
+    if (omin < t.order_min()) TRIQS_RUNTIME_ERROR << "Reading h5 file for a tail : order_min is < -2 which is not permitted";
+    auto sh = d.shape();
+    sh[0] = t._size();
+    resize_or_check_if_view(t._data, sh);
+    auto mask_arr = h5::h5_read<array<int, 2>>(gr, "mask");
+    auto m = min_element(mask_arr);
+    int omax = std::min(m, t.order_max());
+    // int omax = std::min(omin + int(d.shape()[0]) - 1, t.order_max());
+    // std::cout << "omax" << omax << std::endl;
+    // std::cout << "omax" << omin << t._data.shape() << std::endl;
+    // std::cout << omin - t.order_min() <<" ---- "<< omax + 1 - t.order_min()<< " ---"<<  omax - omin + 2 << std::endl;
+    auto _ = ellipsis();
+    t.reset(omax + 1);
+    t._data(range(omin - t.order_min(), omax + 1 - t.order_min()), _) = d(range(0, omax - omin + 1), _);
+   }
   }
 
   /// BOOST Serialization
