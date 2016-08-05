@@ -22,28 +22,28 @@ module.add_preamble("""
 
 t = class_( py_type = "MeshBz",
         c_type = "gf_mesh<brillouin_zone>",
-        c_type_absolute = "triqs::gfs::gf_mesh<brillouin_zone>",
+        c_type_absolute = "triqs::gfs::gf_mesh<triqs::lattice::brillouin_zone>",
         serializable= "tuple",
        )
 #module.add_class(t)
 
 t = class_( py_type = "MeshCyclic",
         c_type = "gf_mesh<cyclic_lattice>",
-        c_type_absolute = "triqs::gfs::gf_mesh<cyclic_lattice>",
+        c_type_absolute = "triqs::gfs::gf_mesh<triqs::gfs::cyclic_lattice>",
         serializable= "tuple",
        )
 module.add_class(t)
 
 t = class_( py_type = "MTailBz",
         c_type = "gf_view<brillouin_zone, tail_valued<matrix_valued>>",
-        c_type_absolute = "triqs::gfs::gf_view<brillouin_zone, tail_valued<matrix_valued>>",
+        c_type_absolute = "triqs::gfs::gf_view<triqs::lattice::brillouin_zone, triqs::gfs::tail_valued<triqs::gfs::matrix_valued>>",
         serializable= "tuple",
        )
 module.add_class(t)
 
 t = class_( py_type = "MTailCyclic",
         c_type = "gf_view<cyclic_lattice, tail_valued<matrix_valued>>",
-        c_type_absolute = "triqs::gfs::gf_view<cyclic_lattice, tail_valued<matrix_valued>>",
+        c_type_absolute = "triqs::gfs::gf_view<triqs::gfs::cyclic_lattice, triqs::gfs::tail_valued<triqs::gfs::matrix_valued>>",
         serializable= "tuple",
        )
 module.add_class(t)
