@@ -570,8 +570,7 @@ namespace gfs {
    return *this;
   }
 
-  template <typename M, typename T, typename RHS>
-  std14::enable_if_t<arrays::is_scalar<RHS>::value, block_gf_view &> operator=(RHS &&rhs) {
+  template <typename RHS> std14::enable_if_t<arrays::is_scalar<RHS>::value, block_gf_view &> operator=(RHS &&rhs) {
    for (auto &y : _glist) y = rhs;
    return *this;
   }
@@ -1548,8 +1547,7 @@ namespace gfs {
    return *this;
   }
 
-  template <typename M, typename T, typename RHS>
-  std14::enable_if_t<arrays::is_scalar<RHS>::value, block2_gf_view &> operator=(RHS &&rhs) {
+  template <typename RHS> std14::enable_if_t<arrays::is_scalar<RHS>::value, block2_gf_view &> operator=(RHS &&rhs) {
    for (auto &x : _glist)
     for (auto &y : x) y = rhs;
    return *this;

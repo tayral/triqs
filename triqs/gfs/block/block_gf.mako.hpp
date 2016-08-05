@@ -315,7 +315,7 @@ namespace gfs {
    return *this;
   }
 
-  template <typename M, typename T, typename RHS>
+  template <typename RHS>
   std14::enable_if_t<arrays::is_scalar<RHS>::value, MAKO_GF &> operator=(RHS &&rhs) {
    // mako %if ARITY == 1 :
    for (auto &y : _glist) y = rhs;

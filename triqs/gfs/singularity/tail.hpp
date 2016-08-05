@@ -154,6 +154,9 @@ namespace gfs {
    return n;
   }
 
+  /// Is the tail empty, i.e. dominant order is nan.
+  bool empty() const { return any(isnan(_data(0, ellipsis{}))); }
+
   /**
    3-dim array of the coefficients: data(i,n,m) stands for $(\mathbf{a}_{i+o_\mathrm{min}})_{nm}$
   */
@@ -478,6 +481,9 @@ namespace gfs {
    return n;
   }
 
+  /// Is the tail empty, i.e. dominant order is nan.
+  bool empty() const { return any(isnan(_data(0, ellipsis{}))); }
+
   /**
    3-dim array of the coefficients: data(i,n,m) stands for $(\mathbf{a}_{i+o_\mathrm{min}})_{nm}$
   */
@@ -742,6 +748,9 @@ namespace gfs {
    return n;
   }
 
+  /// Is the tail empty, i.e. dominant order is nan.
+  bool empty() const { return any(isnan(_data(0, ellipsis{}))); }
+
   /**
    3-dim array of the coefficients: data(i,n,m) stands for $(\mathbf{a}_{i+o_\mathrm{min}})_{nm}$
   */
@@ -936,7 +945,7 @@ namespace gfs {
   int si = omax1 - omin1 + 1;
 
   __tail<T> res = t;
-  if (omin1 == -t.order_max() - 1) { // is not invertible. return nan
+  if (t.empty() or (omin1 == -t.order_max() - 1)) { // is not invertible. return nan
    res.reset();
    return res;
   }

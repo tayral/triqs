@@ -33,7 +33,7 @@ namespace gfs {
   if (x.n_valid_orders() != y.n_valid_orders())
    TRIQS_RUNTIME_ERROR << "Tails have different n_valid_orders: "<<x.n_valid_orders() << " and " << y.n_valid_orders() ;
   auto _ = range(0,x.n_valid_orders());
-  if (max_element(abs(x.data()(_,ellipsis()) - y.data()(_,ellipsis()))) > precision) TRIQS_RUNTIME_ERROR << "Tails have different data";
+  if (max_element(abs(x.data()(_,ellipsis()) - y.data()(_,ellipsis()))) > precision) TRIQS_RUNTIME_ERROR << "Tails have different data"<< x.data() << y.data();
  }
 
  inline void assert_tails_are_close(nothing, nothing, double) {}
