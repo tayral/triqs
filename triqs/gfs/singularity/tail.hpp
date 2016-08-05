@@ -986,7 +986,7 @@ namespace gfs {
        rr() = 0;
       })(r);
 #endif
-  for (int u = t.order_max(); u >= t.order_min(); --u)
+  for (int u = t.largest_non_nan(); u >= t.order_min(); --u)
    r = r / omega + rv_t{t.data()(u - t.order_min(), ellipsis())}; // need to make a matrix view because otherwise + is not defined
   r /= std::pow(omega, t.order_min());
   return r;

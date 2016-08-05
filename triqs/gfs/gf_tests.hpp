@@ -29,8 +29,11 @@ namespace gfs {
    */
  template<typename T1, typename T2>
  void assert_tails_are_close(T1 const &x, T2 const &y, double precision) {
-  static_assert(std::is_same<typename T1::const_view_type, typename T2::const_view_type>::value, "Tails are of different types !");
-  if (max_element(abs(x.data() - y.data())) > precision) TRIQS_RUNTIME_ERROR << "Tails have different data";
+  static_assert(std::is_same<typename T1::const_view_type, typename T2::const_view_type>::value, "Tails are of different types");
+  if (x.n_valid_orders() != y.n_valid_orders())
+   TRIQS_RUNTIME_ERROR << "Tails have different n_valid_orders: "<<x.n_valid_orders() << " and " << y.n_valid_orders() ;
+  auto _ = range(0,x.n_valid_orders());
+  if (max_element(abs(x.data()(_,ellipsis()) - y.data()(_,ellipsis()))) > precision) TRIQS_RUNTIME_ERROR << "Tails have different data";
  }
 
  inline void assert_tails_are_close(nothing, nothing, double) {}
