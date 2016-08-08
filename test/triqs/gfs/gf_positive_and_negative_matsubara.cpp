@@ -32,6 +32,7 @@ TEST(Gf, Density_with_not_all_moments) {
  G.singularity()(1)=1;
  G.singularity()(2)=-2.3;
 
+ std::cout  << G. singularity() << std::endl;
  auto n = triqs::gfs::density(G);
  EXPECT_NEAR_COMPLEX(n, 1/(1+std::exp(-beta * 2.3)), 1.e-9);
 
