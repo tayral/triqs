@@ -82,6 +82,7 @@ find_package(CompilerCheck)
  #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
  #else()
 MESSAGE(STATUS "Compiling in C++14 mode")
+set(TRIQS_CXX_DEFINITIONS ${TRIQS_CXX_DEFINITIONS}  " -std=c++1y ")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 #endif()
 
