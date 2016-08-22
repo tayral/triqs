@@ -206,7 +206,10 @@ namespace gfs {
   private:
   template <typename RHS> void _assign_impl(RHS &&rhs) {
 
-   for (int w = 0; w < size(); ++w) _glist[w] = rhs[w];
+   for (int w = 0; w < size(); ++w){
+    _glist[w] = rhs[w];
+    _block_names[w] = rhs.block_names()[w];
+   }
   }
 
   public:
@@ -231,6 +234,7 @@ namespace gfs {
   */
   template <typename RHS> block_gf &operator=(RHS &&rhs) {
    _glist.resize(rhs.size());
+   _block_names.resize(rhs.size());
    _assign_impl(rhs);
    return *this;
   }
@@ -318,6 +322,7 @@ namespace gfs {
    // auto check_names = gr.get_all_subgroup_names();
    // sort both and check ?
    g._glist.resize(s);
+   g._block_names = block_names;
    for (int i = 0; i < s; ++i) { h5_read(gr, block_names[i], g._glist[i]); }
   }
 
@@ -549,7 +554,10 @@ namespace gfs {
   private:
   template <typename RHS> void _assign_impl(RHS &&rhs) {
 
-   for (int w = 0; w < size(); ++w) _glist[w] = rhs[w];
+   for (int w = 0; w < size(); ++w){
+    _glist[w] = rhs[w];
+    _block_names[w] = rhs.block_names()[w];
+   }
   }
 
   public:
@@ -664,6 +672,7 @@ namespace gfs {
    // auto check_names = gr.get_all_subgroup_names();
    // sort both and check ?
    g._glist.resize(s);
+   g._block_names = block_names;
    for (int i = 0; i < s; ++i) { h5_read(gr, block_names[i], g._glist[i]); }
   }
 
@@ -893,7 +902,10 @@ namespace gfs {
   private:
   template <typename RHS> void _assign_impl(RHS &&rhs) {
 
-   for (int w = 0; w < size(); ++w) _glist[w] = rhs[w];
+   for (int w = 0; w < size(); ++w){
+    _glist[w] = rhs[w];
+    _block_names[w] = rhs.block_names()[w];
+   }
   }
 
   public:
@@ -983,6 +995,7 @@ namespace gfs {
    // auto check_names = gr.get_all_subgroup_names();
    // sort both and check ?
    g._glist.resize(s);
+   g._block_names = block_names;
    for (int i = 0; i < s; ++i) { h5_read(gr, block_names[i], g._glist[i]); }
   }
 
@@ -1200,8 +1213,10 @@ namespace gfs {
   private:
   template <typename RHS> void _assign_impl(RHS &&rhs) {
 
-   for (int w = 0; w < size1(); ++w)
+   for (int w = 0; w < size1(); ++w){
     for (int v = 0; v < size2(); ++v) _glist[w][v] = rhs[w][v];
+    _block_names[w] = rhs.block_names()[w];
+   }
   }
 
   public:
@@ -1226,6 +1241,7 @@ namespace gfs {
   */
   template <typename RHS> block2_gf &operator=(RHS &&rhs) {
    _glist.resize(rhs.size());
+   _block_names.resize(rhs.size());
    _assign_impl(rhs);
    return *this;
   }
@@ -1287,9 +1303,10 @@ namespace gfs {
    auto gr = fg.create_group(subgroup_name);
    gr.write_triqs_hdf5_data_scheme(g);
 
+   h5_write(gr, "block_names", g.block_names());
+
    for (int i = 0; i < g.size1(); ++i)
     for (int j = 0; j < g.size2(); ++j) h5_write(gr, g.block_names()[0][i] + "_" + g.block_names()[1][j], g._glist[i][j]);
-   h5_write(gr, "block_names", g.block_names()[0]);
   }
 
   /// Read from HDF5
@@ -1301,14 +1318,18 @@ namespace gfs {
    if (tag_file != tag_expected)
     TRIQS_RUNTIME_ERROR << "h5_read : mismatch of the tag TRIQS_HDF5_data_scheme tag in the h5 group : found " << tag_file
                         << " while I expected " << tag_expected;
-   auto block_names = h5::h5_read<std::vector<std::string>>(gr, "block_names");
-   int s = block_names.size();
+   auto block_names = h5::h5_read<std::vector<std::vector<std::string>>>(gr, "block_names");
+   int s0 = block_names[0].size();
+   int s1 = block_names[1].size();
    // auto check_names = gr.get_all_subgroup_names();
    // sort both and check ?
-   g._glist.resize(s);
-   for (int i = 0; i < s; ++i) {
-    g._glist[i].resize(s);
-    for (int j = 0; j < s; ++j) h5_read(gr, block_names[i] + "_" + block_names[j], g._glist[i][j]);
+   g._glist.resize(s0);
+   g._block_names = block_names; 
+   for (int i = 0; i < s0; ++i) {
+    g._glist[i].resize(s1);
+    for (int j = 0; j < s1; ++j) {
+     h5_read(gr, block_names[0][i] + "_" + block_names[1][j], g._glist[i][j]);
+    }
    }
   }
 
@@ -1525,8 +1546,10 @@ namespace gfs {
   private:
   template <typename RHS> void _assign_impl(RHS &&rhs) {
 
-   for (int w = 0; w < size1(); ++w)
+   for (int w = 0; w < size1(); ++w){
     for (int v = 0; v < size2(); ++v) _glist[w][v] = rhs[w][v];
+    _block_names[w] = rhs.block_names()[w];
+   }
   }
 
   public:
@@ -1616,9 +1639,10 @@ namespace gfs {
    auto gr = fg.create_group(subgroup_name);
    gr.write_triqs_hdf5_data_scheme(g);
 
+   h5_write(gr, "block_names", g.block_names());
+
    for (int i = 0; i < g.size1(); ++i)
     for (int j = 0; j < g.size2(); ++j) h5_write(gr, g.block_names()[0][i] + "_" + g.block_names()[1][j], g._glist[i][j]);
-   h5_write(gr, "block_names", g.block_names()[0]);
   }
 
   /// Read from HDF5
@@ -1630,14 +1654,18 @@ namespace gfs {
    if (tag_file != tag_expected)
     TRIQS_RUNTIME_ERROR << "h5_read : mismatch of the tag TRIQS_HDF5_data_scheme tag in the h5 group : found " << tag_file
                         << " while I expected " << tag_expected;
-   auto block_names = h5::h5_read<std::vector<std::string>>(gr, "block_names");
-   int s = block_names.size();
+   auto block_names = h5::h5_read<std::vector<std::vector<std::string>>>(gr, "block_names");
+   int s0 = block_names[0].size();
+   int s1 = block_names[1].size();
    // auto check_names = gr.get_all_subgroup_names();
    // sort both and check ?
-   g._glist.resize(s);
-   for (int i = 0; i < s; ++i) {
-    g._glist[i].resize(s);
-    for (int j = 0; j < s; ++j) h5_read(gr, block_names[i] + "_" + block_names[j], g._glist[i][j]);
+   g._glist.resize(s0);
+   g._block_names = block_names; 
+   for (int i = 0; i < s0; ++i) {
+    g._glist[i].resize(s1);
+    for (int j = 0; j < s1; ++j) {
+     h5_read(gr, block_names[0][i] + "_" + block_names[1][j], g._glist[i][j]);
+    }
    }
   }
 
@@ -1852,8 +1880,10 @@ namespace gfs {
   private:
   template <typename RHS> void _assign_impl(RHS &&rhs) {
 
-   for (int w = 0; w < size1(); ++w)
+   for (int w = 0; w < size1(); ++w){
     for (int v = 0; v < size2(); ++v) _glist[w][v] = rhs[w][v];
+    _block_names[w] = rhs.block_names()[w];
+   }
   }
 
   public:
@@ -1917,9 +1947,10 @@ namespace gfs {
    auto gr = fg.create_group(subgroup_name);
    gr.write_triqs_hdf5_data_scheme(g);
 
+   h5_write(gr, "block_names", g.block_names());
+
    for (int i = 0; i < g.size1(); ++i)
     for (int j = 0; j < g.size2(); ++j) h5_write(gr, g.block_names()[0][i] + "_" + g.block_names()[1][j], g._glist[i][j]);
-   h5_write(gr, "block_names", g.block_names()[0]);
   }
 
   /// Read from HDF5
@@ -1931,14 +1962,18 @@ namespace gfs {
    if (tag_file != tag_expected)
     TRIQS_RUNTIME_ERROR << "h5_read : mismatch of the tag TRIQS_HDF5_data_scheme tag in the h5 group : found " << tag_file
                         << " while I expected " << tag_expected;
-   auto block_names = h5::h5_read<std::vector<std::string>>(gr, "block_names");
-   int s = block_names.size();
+   auto block_names = h5::h5_read<std::vector<std::vector<std::string>>>(gr, "block_names");
+   int s0 = block_names[0].size();
+   int s1 = block_names[1].size();
    // auto check_names = gr.get_all_subgroup_names();
    // sort both and check ?
-   g._glist.resize(s);
-   for (int i = 0; i < s; ++i) {
-    g._glist[i].resize(s);
-    for (int j = 0; j < s; ++j) h5_read(gr, block_names[i] + "_" + block_names[j], g._glist[i][j]);
+   g._glist.resize(s0);
+   g._block_names = block_names; 
+   for (int i = 0; i < s0; ++i) {
+    g._glist[i].resize(s1);
+    for (int j = 0; j < s1; ++j) {
+     h5_read(gr, block_names[0][i] + "_" + block_names[1][j], g._glist[i][j]);
+    }
    }
   }
 
