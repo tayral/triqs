@@ -43,10 +43,10 @@ namespace gfs {
   static std::string invoke() { return "ReFreq"; }
  };
  template <> struct gf_h5_name<brillouin_zone, matrix_valued> {
-  static std::string invoke() { return "BZ"; }
+  static std::string invoke() { return "BrillouinZone"; }
  };
  template <> struct gf_h5_name<cyclic_lattice, matrix_valued> {
-  static std::string invoke() { return "R"; }
+  static std::string invoke() { return "CyclicLattice"; }
  };
 
  // h5 name : name1_x_name2_.....
