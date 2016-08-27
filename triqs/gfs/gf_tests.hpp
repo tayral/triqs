@@ -40,10 +40,14 @@ namespace gfs {
 
  inline void assert_tails_are_close(nothing, nothing, double) {}
 
-// /// check tails are close (if TailType==tail, compare min/max orders and data)
-// void assert_tails_are_close(tail const &x, tail const &y, double precision) {
-//  if (max_element(abs(x.data() - y.data())) > precision) TRIQS_RUNTIME_ERROR << "Tails have different data";
- //}
+ // for m_tail which are a tail for g(k,om) and also a g(k) -> tail_valued.
+ template <typename M, typename Ta>
+ void assert_tails_are_close(gf_const_view<M, Ta> const &x, gf_const_view<M, Ta> const &y, double precision) {
+  assert_gfs_are_close(x, y, precision);
+ }
+ template <typename M, typename Ta> void assert_tails_are_close(gf<M, Ta> const &x, gf<M, Ta> const &y, double precision) {
+  assert_gfs_are_close(x, y, precision);
+ }
 
  // check gfs are close
  template<typename X, typename Y>

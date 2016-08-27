@@ -137,13 +137,19 @@ namespace gfs {
   }
  };
 
- /// ---------------------------  
+ /// ---------------------------
 
+ // FIXME The mesh info is duplicated with the function it reads ... Need to pass a ref to the parent function ?
  template <typename Var> struct gf_h5_rw<Var, tail_valued<matrix_valued>> {
-  template <typename G> static void write(h5::group gr, G const &g) { h5_write(gr, "data", g._data); }
-  template <typename G> static void read(h5::group gr, G &g) { h5_read(gr, "data", g._data); }
+  template <typename G> static void write(h5::group gr, G const &g) {
+   h5_write(gr, "data", g._data);
+   h5_write(gr, "mesh", g._mesh);
+  }
+  template <typename G> static void read(h5::group gr, G &g) {
+   h5_read(gr, "data", g._data);
+   h5_read(gr, "mesh", g._mesh);
+  }
  };
-
 
 } // triqs::gfs
 }
