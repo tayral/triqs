@@ -266,7 +266,7 @@ class BlockGf(object):
             assert len(arg) == len(self.__GFlist), "list of incorrect length"
             for l,g in izip(arg,self.__GFlist): g +=l 
         else:
-            for i,g in self: g += arg
+            for i,g in self: self[i] += arg
         return self
 
     def __add__(self,y):
@@ -283,7 +283,7 @@ class BlockGf(object):
             assert len(arg) == len(self.__GFlist) , "list of incorrect length"
             for l,g in izip(arg,self.__GFlist): g -=l 
         else:
-            for i,g in self: g -= arg
+            for i,g in self: self[i] -= arg
         return self
 
     def __sub__(self,y):
@@ -303,7 +303,7 @@ class BlockGf(object):
             assert len(arg) == len(self.__GFlist) , "list of incorrect length"
             for l,g in izip(arg,self.__GFlist): g*=l 
         else: 
-            for i,g in self: g *= arg
+            for i,g in self: self[i] *= arg
         return self
 
     def __mul__(self,y):

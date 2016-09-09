@@ -101,3 +101,8 @@ H = G+F
 assert H["a"].data[0,0,0,0,0]==15.0, "not ok: %s"%H["a"].data[0,0,0,0,0]
 assert H["b"].data[0,0,0,0,0]==10.0, "not ok: %s"%H["b"].data[0,0,0,0,0]
 
+H2 = 0.5*H
+assert H2["a"].data[0,0,0,0,0]==7.5, "not ok: %s"%H2["a"].data[0,0,0,0,0]
+H3 = H/2.0
+assert H3["a"].data[0,0,0,0,0]==7.5, "not ok: %s"%H3["a"].data[0,0,0,0,0]
+
