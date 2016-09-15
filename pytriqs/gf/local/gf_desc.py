@@ -231,6 +231,16 @@ m.add_constructor(signature = "(triqs::lattice::brillouin_zone b, int n_k)")
 m.add_constructor(signature = "(triqs::lattice::brillouin_zone b, matrix_view<int> periodization_matrix)")
 m.add_method(name="locate_neighbours", signature="triqs::utility::mini_vector<int,3> locate_neighbours(triqs::arrays::vector<double> x)")
 m.add_method(name="index_to_linear", signature="long index_to_linear(triqs::utility::mini_vector<int,3> x)")
+m.add_method(name="index_to_point", signature="triqs::arrays::vector<double> index_to_point(triqs::utility::mini_vector<int,3> x)")
+m.add_method(name="linear_to_index", signature="triqs::utility::mini_vector<int,3> linear_to_index(long x)")
+m.add_property(name = "units", 
+               getter = cfunction(calling_pattern="matrix_view<double> result = self_c.units",
+               signature = "matrix_view<double>()"),
+               doc = "unit vectors of the mesh")
+m.add_property(name = "periodization_matrix", 
+               getter = cfunction(calling_pattern="matrix_view<int> result = self_c.periodization_matrix",
+               signature = "matrix_view<int>()"),
+               doc = "unit vectors of the mesh")
 module.add_class(m)
 
 ########################
@@ -240,8 +250,16 @@ module.add_class(m)
 m = make_mesh( py_type = "MeshCyclicLattice", c_tag = "cyclic_lattice", is_im = True)
 #m.add_constructor(signature = "(triqs::gfs::cyclic_lattice b, int n_Rx, int n_Ry, int n_Rz)")
 m.add_constructor(signature = "(triqs::lattice::bravais_lattice b, matrix_view<int> periodization_matrix)")
-#m.add_method(name="locate_neighbours", signature="triqs::utility::mini_vector<int,3> locate_neighbours(triqs::arrays::vector<double> x)")
-#m.add_method(name="index_to_linear", signature="long index_to_linear(triqs::utility::mini_vector<int,3> x)")
+m.add_method(name="index_to_linear", signature="long index_to_linear(triqs::utility::mini_vector<int,3> x)")
+m.add_method(name="linear_to_index", signature="triqs::utility::mini_vector<int,3> linear_to_index(long x)")
+m.add_property(name = "units", 
+               getter = cfunction(calling_pattern="matrix_view<double> result = self_c.units",
+               signature = "matrix_view<double>()"),
+               doc = "unit vectors of the mesh")
+m.add_property(name = "periodization_matrix", 
+               getter = cfunction(calling_pattern="matrix_view<int> result = self_c.periodization_matrix",
+               signature = "matrix_view<int>()"),
+               doc = "unit vectors of the mesh")
 module.add_class(m)
 
 ########################

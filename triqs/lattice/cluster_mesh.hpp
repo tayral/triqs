@@ -142,6 +142,12 @@ namespace gfs {
    return _modulo(i[0], 0) * s2 + _modulo(i[1], 1) * s1 + _modulo(i[2], 2);
   }
 
+  index_t linear_to_index(linear_index_t const & l) const {
+   int k = l % dims[2];
+   int j = ((l-k)/dims[2])%dims[1];
+   int i = ((l-k)/dims[2]-j)/dims[1];
+   return {i,j,k};
+  }
 
   /// Is the point in the mesh ? Always true
   template <typename T> bool is_within_boundary(T const&) const { return true; }
