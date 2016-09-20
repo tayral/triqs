@@ -41,7 +41,7 @@ __all__ = ['Omega','iOmega_n','SemiCircular','Flat', 'Wilson','Fourier','Inverse
            'GfImTime', 'MeshImTime', 'GfImTimeTv3', 'GfImTimeTv4',
            'GfReFreq', 'MeshReFreq', 'GfReFreqTv3', 'GfReFreqTv4',
            'GfReTime', 'MeshReTime', 
-           'GfBrillouinZone', 'MeshBrillouinZone',
+           'GfBrillouinZone', 'MeshBrillouinZone', 'MeshCyclicLattice',
            'GfLegendre', 'MeshLegendre',
            'make_gf_from_inverse_fourier',
            'BlockGf','inverse','is_gf_real_in_tau',

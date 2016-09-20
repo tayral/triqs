@@ -33,20 +33,33 @@ namespace lattice {
  using arrays::array;
  using arrays::range;
 
- // --------------------------------------------------------
-
  class bravais_lattice {
 
   public:
   using point_t = std::vector<int>; // domain concept. PUT on STACK
 
+  ///constructor
+  /**
+   * @param units cartesian coordinates of the unit vectors (each vector: a *row* of the matrix); size is dim x dim
+   */
   bravais_lattice(matrix<double> const& units, std::vector<r_t> atom_orb_pos, std::vector<std::string> atom_orb_name);
+  ///constructor
+  /**
+   * @param units cartesian coordinates of the unit vectors (each vector: a *row* of the matrix)
+   */
   bravais_lattice(matrix<double> const& units, std::vector<r_t> atom_orb_pos)
      : bravais_lattice(units, atom_orb_pos, std::vector<std::string>(atom_orb_pos.size(), "")) {}
+  ///constructor
+  //
+  /**
+   * @param units cartesian coordinates of the unit vectors (each vector:  a *row* of the matrix)
+   */
   bravais_lattice(matrix<double> const& units) : bravais_lattice(units, std::vector<r_t>{{0, 0, 0}}) {}
+  ///default constructor
   bravais_lattice() : bravais_lattice(arrays::make_unit_matrix<double>(2)) {}
 
   int n_orbitals() const { return atom_orb_name.size(); }
+  /// matrix of the cartesian coordinates of the unit vectors (each vector:  a *row* of the matrix)
   arrays::matrix_const_view<double> units() const { return units_; }
   int dim() const { return dim_; }
 
@@ -67,13 +80,14 @@ namespace lattice {
   //  BOOST Serialization
   friend class boost::serialization::access;
   template <class Archive> void serialize(Archive& ar, const unsigned int version) {
-   ar& TRIQS_MAKE_NVP("units", units_);
-   ar& TRIQS_MAKE_NVP("atom_orb_pos", atom_orb_pos);
-   ar& TRIQS_MAKE_NVP("atom_orb_name", atom_orb_name);
+   ar& units_;
+   ar& atom_orb_pos;
+   ar& atom_orb_name;
   }
 
   private:
-  matrix<double> units_;
+
+  matrix<double> units_;  //cartesian coordinates of the unit vectors (each coordinate as a *column* of the matrix)
   std::vector<r_t> atom_orb_pos;          // atom_orb_pos[i] = position of ith atoms/orbitals in the unit cell
   std::vector<std::string> atom_orb_name; // names of these atoms/orbitals.
   int dim_;

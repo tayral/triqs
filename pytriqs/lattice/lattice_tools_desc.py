@@ -57,6 +57,7 @@ c.add_constructor("""(triqs::lattice::bravais_lattice bl_)""",
 c.add_property(name = "lattice",
                getter = cfunction("triqs::lattice::bravais_lattice lattice ()"),
                doc = """Access to the underlying bravais lattice """)
+c.add_property(getter = cfunction("matrix_const_view<double> units()"), doc = "Reciprocal unit vectors")
 module.add_class(c)
 
 # ---------   TightBinding ----------------------------------

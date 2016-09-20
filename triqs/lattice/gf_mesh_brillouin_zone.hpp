@@ -38,22 +38,16 @@ namespace gfs {
   ///full constructor
   /**
     @param bz_ brillouin zone
-    @param periodization_matrix such that $\tilde{a}_i = \sum_j N_{ij} a_j$
+    @param periodization_matrix $N$ such that $\tilde{a}_i = \sum_j N_{ij} a_j$, i.e rows of N give coordinates of each super-unit vector. (shape: dimxdim)
 
     Constructs $$\tilde{b}_i = \sum_j N^{-1}_{ji} b_j$$ where $b_j$ reciprocal vectors
    */
-  gf_mesh(brillouin_zone const& bz_, matrix<int> const & periodization_matrix_)
-     : bz(bz_), cluster_mesh(make_unit_matrix<double>(3), periodization_matrix_.transpose()) {
-      matrix<double> N_as_double = periodization_matrix_;
-         matrix<double> Nt_inv = inverse(N_as_double.transpose());
-         units = Nt_inv * bz_.units();
-     }
+  gf_mesh(brillouin_zone const& bz_, matrix<int> const & periodization_matrix_);
 
   ///backward compatibility
   /** constructs simple bz mesh on square lattice with simple boundary conditions
     */
-  gf_mesh(brillouin_zone const& bz_, int n_l)
-     : bz(bz_), cluster_mesh(matrix<double>{{{2*M_PI/n_l, 0., 0.},{0., bz_.lattice().dim()>=2 ? 2*M_PI/n_l : 2*M_PI, 0.}, {0. ,0., bz_.lattice().dim()>=3 ? 2*M_PI/n_l : 2*M_PI}}}, matrix<int>{{{n_l, 0, 0},{0, bz_.lattice().dim()>=2 ? n_l : 1, 0}, {0 ,0, bz_.lattice().dim()>=3 ? n_l : 1}}}) { }
+  gf_mesh(brillouin_zone const& bz_, int n_l);
 
 
   /// ----------- Model the mesh concept  ----------------------

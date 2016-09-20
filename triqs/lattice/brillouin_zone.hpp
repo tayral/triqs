@@ -29,7 +29,8 @@ namespace lattice {
   public:
   using point_t = k_t; // domain concept
 
-  brillouin_zone() { // default construction, 3d cubic lattice
+  /// default construction, 3d cubic lattice
+  brillouin_zone() { 
    K_reciprocal = arrays::make_unit_matrix<double>(3);
    K_reciprocal_inv = K_reciprocal;
   }
@@ -40,11 +41,13 @@ namespace lattice {
   /// Access to the underlying bravais lattice
   bravais_lattice lattice() const { return lattice_; }
   
-  ///return reciprocal matrix: lines are cartesian coordinates of each reciprocal unit vectors
+  ///return units: *rows* are cartesian coordinates of each reciprocal unit vector
   arrays::matrix_view<double> units() const { return K_reciprocal; }
-  ///return reciprocal matrix: lines are cartesian coordinates of each reciprocal unit vectors
+
+  ///return reciprocal matrix: *rows* are cartesian coordinates of each reciprocal unit vector
   arrays::matrix_view<double> reciprocal_matrix() const { return K_reciprocal; }
 
+  ///return inverse reciprocal matrix
   arrays::matrix_view<double> reciprocal_matrix_inv() const { return K_reciprocal_inv; }
 
   /// Transform from lattice to real coordinates
@@ -67,15 +70,14 @@ namespace lattice {
 
   private:
   bravais_lattice lattice_;
-  arrays::matrix<double> K_reciprocal, K_reciprocal_inv;
+  ///K_reciprocal: cartesian coordinates of reciprocal unit vectors (coordinates as *rows* of the matrix)
+  arrays::matrix<double> K_reciprocal, K_reciprocal_inv; 
 
-  ///FIXME
   template <typename K> k_t _transfo_impl(K const& k, arrays::matrix<double> const& K_base) const {
    if (first_dim(k) != lattice().dim()) TRIQS_RUNTIME_ERROR << "latt_to_real_k : dimension of k must be " << lattice().dim();
    k_t res(3);
    res() = 0;
-   int dim = lattice().dim();
-   for (int i = 0; i < dim; i++) res += k(i) * K_base(i, range{});
+   for (int i = 0; i < lattice().dim(); i++) res += k(i) * K_base(i, range{});
    return res;
   }
  };

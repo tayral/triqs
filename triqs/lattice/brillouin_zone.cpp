@@ -41,7 +41,6 @@ namespace lattice {
   K_reciprocal_inv = inverse(K_reciprocal);
  }
 
- //------------------------------------------------------------------------------------
  /// Write into HDF5
  void h5_write(h5::group fg, std::string subgroup_name, brillouin_zone const& bz) {
   h5::group gr = fg.create_group(subgroup_name);

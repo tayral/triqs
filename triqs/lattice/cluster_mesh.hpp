@@ -28,6 +28,22 @@
 namespace triqs {
 namespace gfs {
  using namespace triqs::arrays;
+ ///if matrix not 3x3 (e.g 2x2 or 1x1, fill with 1's on diagonal)
+ template<typename Mat>
+  Mat fill_last_dimensions(Mat const & M){
+   auto M2 = typename Mat::regular_type(3,3);
+   M2() = 0;
+   if (M.shape()[0]<3){
+    M2(range(0,M.shape()[0]),range(0,M.shape()[0])) = M;
+    for(int i=M.shape()[0];i<3;i++)
+     M2(i,i) = 1;
+   }
+   else{
+    M2 = M;
+   }
+   return M2;
+  }
+
  /// Compute dimensions of a parallelepiped cluster cell using the inverse of the periodization matrix
  /**
    @param inv_n inverse $N^{-1}$ of the periodization matrix
@@ -46,10 +62,10 @@ namespace gfs {
    The algorithm used is the following:
    let $C={(0,0,0)}$
    for each dimension $d=1\dots 3$ :
-     - Find the lowest nonzero integer $k_d$ such that there exists $mathbf{x}$ in C such for all $d_p$ in $1\dots 3$, $k_d
-   mathbf{a}_d - mathbf{x}$ belongs to the superlattice.
-     - Update $C = {mathbf{x} + q mathbf{a}_d, mathbf{x}\in C, q=0\dots k_d-1}$
-   return {k_d}_{k=1\dots d}
+     - Find the lowest nonzero integer $k_d$ such that there exists $\mathbf{x}$ in C such for all $d_p$ in $1\dots 3$, $k_d
+   \mathbf{a}_d - \mathbf{x}$ belongs to the superlattice.
+     - Update $C = {\mathbf{x} + q mathbf{a}_d, mathbf{x}\in C, q=0\dots k_d-1}$
+   return ${k_d}_{k=1\dots d}$
    */
  utility::mini_vector<int, 3> find_cell_dims(arrays::matrix<double> const& inv_n);
 
