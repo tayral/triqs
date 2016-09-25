@@ -46,18 +46,18 @@ namespace gfs {
 
  /// Compute dimensions of a parallelepiped cluster cell using the inverse of the periodization matrix
  /**
-   @param inv_n inverse $N^{-1}$ of the periodization matrix
+   @param inv_n inverse $P^{-1}$ of the periodization matrix
    @return the dimensions of the parallelepiped unit cell
 
    for a given Bravais lattice (defined by unit vectors ${a_i}_{i=0\dots d-1}$), the periodic boundary conditions are uniquely
-   defined by the matrix $N$ such that the super vectors $\tilde{a}_i$ are given by:
+   defined by the matrix $P$ such that the super vectors $\tilde{a}_i$ are given by:
 
-   $$\tilde{a}_i = \sum_j N_{ij} a_j$$
+   $$\tilde{a}_i = \sum_j P_{ij} a_j$$
 
    This function computes the dimensions of a parallelepipedic super unit cell (i.e corresponding to the super vectors).
 
    Example:
-    If $N_{ij}$ is diag{n_k1, n_k2, n_k3}, this returns {n_k1, n_k2, n_k3}
+    If $P_{ij}$ is diag{n_k1, n_k2, n_k3}, this returns {n_k1, n_k2, n_k3}
 
    The algorithm used is the following:
    let $C={(0,0,0)}$
@@ -72,7 +72,7 @@ namespace gfs {
  /// A lattice point
  struct lattice_point : public utility::arithmetic_ops_by_cast<lattice_point, arrays::vector<double>> {
   utility::mini_vector<long, 3> index;
-  arrays::matrix<double> units; // unit vectors
+  arrays::matrix<double> units; // unit vectors {a_i}
 
   lattice_point() : index({0, 0, 0}), units(arrays::make_unit_matrix<double>(3)) {}
   lattice_point(utility::mini_vector<long, 3> const& index_, matrix<double> const& units_) : index(index_), units(units_) {}
@@ -92,11 +92,12 @@ namespace gfs {
 
  struct cluster_mesh {
 
-  matrix<double> units;
-  matrix<int> periodization_matrix;
+  matrix<double> units; //cartesian coord. of primitive vectors $a_i$ (as rows of matrix)
+  matrix<int> periodization_matrix; //specifies $\tilde{a}_i$
   utility::mini_vector<int, 3> dims; // the size in each dimension
-  size_t _size;
-  long s1, s2;
+  size_t _size; //number of points
+  long s1, s2; //strides
+  bool is_diag ;//true if periodization_matrix is diagonal
 
   long _modulo(long r, int i) const {
    long res = r % dims[i];
@@ -109,16 +110,10 @@ namespace gfs {
   /**
     * @param units matrix X such that the unit vectors (a_i) are given in cartesian coordinates (e_j) by:
           $$ \mathbf{a}_i = \sum_{j} x_{ij} \mathbf{e}_j $$
-    * @param periodization_matrix matrix $N$ specifying the periodic boundary conditions:
-          $$ \tilde{\mathbf{a}}_i = \sum_j N_{ij} \mathbf{a}_j $$
+    * @param periodization_matrix matrix $P$ specifying the periodic boundary conditions:
+          $$ \tilde{\mathbf{a}}_i = \sum_j P_{ij} \mathbf{a}_j $$
     */
-  cluster_mesh(matrix<double> const& units_, matrix<int> const& periodization_matrix_)
-     : units(units_), periodization_matrix(periodization_matrix_) {
-   dims = find_cell_dims(inverse(matrix<double>(periodization_matrix)));
-   _size = dims[0] * dims[1] * dims[2];
-   s1 = dims[2];           // stride
-   s2 = dims[1] * dims[2]; // stride
-  }
+  cluster_mesh(matrix<double> const& units_, matrix<int> const& periodization_matrix_) ; 
 
   int rank() const { return (dims[2] > 1 ? 3 : (dims[1] > 1 ? 2 : 1)); }
 
@@ -145,25 +140,22 @@ namespace gfs {
     * @param index_t the (integer) coordinates of the point (in basis a_i)
     * @warning can be made faster by writing this a matrix-vector multiplication
     */
-  point_t index_to_point(index_t const& n) const {
-   point_t M(3);
-   M() = 0.0;
-   for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++) M(i) += n[j] * units(j, i);
-   return M;
-  }
+  point_t index_to_point(index_t const& n) const ;
 
-  /// flatten the index
-  linear_index_t index_to_linear(index_t const& i) const {
-   return _modulo(i[0], 0) * s2 + _modulo(i[1], 1) * s1 + _modulo(i[2], 2);
-  }
+  /// flatten the index 
+  /*
+   * if the periodization_matrix $P$ is diagonal, simple modulo operation 
+   * otherwise, look for integers $(L,M,N)$ such that
+   * the point $i[0]*a_0+i[1]*a_1+i[2]*a_2 -(L*\tilde{a}_0 + M*\tilde{a}_1 + N*\tilde{a}_2)$ belongs to the unit cell, i.e
+   $$ 0 <= i[0] - L P_{00} - M P_{10} - N P_{20} < dims[0] $$
+   $$ 0 <= i[1] - L P_{01} - M P_{11} - N P_{21} < dims[1] $$
+   $$ 0 <= i[2] - L P_{02} - M P_{12} - N P_{22} < dims[2] $$
+   * To solve these equations, the possible (L,N,M) are enumerated until the 3 conditions are met.
+   */
+  linear_index_t index_to_linear(index_t const& i) const ;
 
-  index_t linear_to_index(linear_index_t const & l) const {
-   int k = l % dims[2];
-   int j = ((l-k)/dims[2])%dims[1];
-   int i = ((l-k)/dims[2]-j)/dims[1];
-   return {i,j,k};
-  }
+  ///index from linear index
+  index_t linear_to_index(linear_index_t const & l) const ;
 
   /// Is the point in the mesh ? Always true
   template <typename T> bool is_within_boundary(T const&) const { return true; }
@@ -209,35 +201,25 @@ namespace gfs {
   // -------------- Evaluation of a function on the grid --------------------------
 
   /// Reduce index modulo to the lattice.
-  index_t index_modulo(index_t const& r) const { return index_t{_modulo(r[0], 0), _modulo(r[1], 1), _modulo(r[2], 2)}; }
+  index_t index_modulo(index_t const& r) const { 
+   return this->linear_to_index(this->index_to_linear(r));
+  }
 
   using interpol_data_t = index_t;
-  interpol_data_t get_interpolation_data(default_interpol_policy, index_t const& x) const { return index_modulo(x); }
+  interpol_data_t get_interpolation_data(default_interpol_policy, index_t const& x) const { 
+   return index_modulo(x);
+  }
   template <typename F>
-  auto evaluate(default_interpol_policy, F const& f, index_t const& x) const
-#ifdef TRIQS_CPP11
-      -> std14::decay_t<decltype(f[0])>
-#endif
-  {
+  auto evaluate(default_interpol_policy, F const& f, index_t const& x) const  {
    auto id = get_interpolation_data(default_interpol_policy{}, x);
    return f[id];
   }
 
-  // -------------- HDF5  --------------------------
   /// Write into HDF5
-  friend void h5_write(h5::group fg, std::string subgroup_name, cluster_mesh const& m) {
-   h5::group gr = fg.create_group(subgroup_name);
-   h5_write(gr, "units", m.units);
-   h5_write(gr, "periodization_matrix", m.periodization_matrix);
-  }
+  friend void h5_write(h5::group fg, std::string subgroup_name, cluster_mesh const& m) ;
 
   /// Read from HDF5
-  friend void h5_read(h5::group fg, std::string subgroup_name, cluster_mesh& m) {
-   h5::group gr = fg.open_group(subgroup_name);
-   auto units = h5::h5_read<matrix<double>>(gr, "units");
-   auto periodization_matrix = h5::h5_read<matrix<double>>(gr, "periodization_matrix");
-   m = cluster_mesh(units, periodization_matrix);
-  }
+  friend void h5_read(h5::group fg, std::string subgroup_name, cluster_mesh& m) ;
 
   //  BOOST Serialization
   friend class boost::serialization::access;
@@ -248,6 +230,7 @@ namespace gfs {
    ar& _size;
    ar& s2;
    ar& s1;
+   ar& is_diag;
   }
 
   friend std::ostream& operator<<(std::ostream& sout, cluster_mesh const& m) {
@@ -301,7 +284,7 @@ namespace gfs {
 
  /// Reduce point modulo to the lattice.
  inline cluster_mesh::mesh_point_t cluster_mesh::modulo_reduce(index_t const& r) const {
-  return mesh_point_t{*this, {_modulo(r[0], 0), _modulo(r[1], 1), _modulo(r[2], 2)}};
+  return mesh_point_t{*this, index_modulo(r)};
  }
 }
 }

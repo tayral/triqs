@@ -31,6 +31,18 @@ TEST(ClusterMesh, Basic){
  EXPECT_EQ(m3.size(), 72);
 
 }
+TEST(ClusterMesh, IndexToLinear){
+ auto m1 = cluster_mesh(make_unit_matrix<double>(3), matrix<int>({{2,0,0},{0,2,0},{0,0,1}}));
+
+ EXPECT_EQ(m1.index_to_linear({0,2,0}),0) ;
+ EXPECT_EQ(m1.index_to_linear({5,2,0}),2) ;
+
+ auto m2 = cluster_mesh(make_unit_matrix<double>(3), matrix<int>({{2,2,0},{-2,2,0},{0,0,1}}));
+
+ EXPECT_EQ(m2.index_to_linear({0,2,0}),4) ;
+ EXPECT_EQ(m2.index_to_linear({5,2,0}),6) ;
+
+}
  
 MAKE_MAIN;
 

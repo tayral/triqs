@@ -29,9 +29,9 @@ for unit in units:
 #  #xticklabels(["0",r"$\pi$",r"$2\pi$"])  
 #  grid()
 #tight_layout()
-assert k_mesh.locate_neighbours([0.,5.,0.]) == [4,4,0]
-assert k_mesh.locate_neighbours([2.,1.,0.]) == [4, 0, 0]
-assert k_mesh.locate_neighbours([2.,0.,0.]) == [3, -1, 0]
+  #assert k_mesh.locate_neighbours([0.,5.,0.]) == [4,4,0]
+  #assert k_mesh.locate_neighbours([2.,1.,0.]) == [4, 0, 0]
+  #assert k_mesh.locate_neighbours([2.,0.,0.]) == [3, -1, 0]
 
-assert k_mesh.index_to_linear(k_mesh.locate_neighbours([2.,1.,0.])) == 24
-assert k_mesh.index_to_linear(k_mesh.locate_neighbours([2.,0.,0.])) == 23
+  #assert k_mesh.index_to_linear(k_mesh.locate_neighbours([2.,1.,0.])) == 24
+  #assert k_mesh.index_to_linear(k_mesh.locate_neighbours([2.,0.,0.])) == 23
