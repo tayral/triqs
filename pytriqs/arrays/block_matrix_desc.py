@@ -54,6 +54,7 @@ c.add_setitem(
              calling_pattern = "self_c(s) = m",
              signature = "void(std::string s, matrix<double> m)", 
              doc = """ """)
+c.add_method_copy()
 
 module.add_class(c)
 

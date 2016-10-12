@@ -10,7 +10,7 @@ namespace triqs { namespace arrays {
   */
  template<typename T>
  struct block_matrix {
-
+  using regular_type = block_matrix<T>;
   std::vector<std::string> block_names;
   std::vector<matrix<T>> matrix_vec;
   int size() const { return matrix_vec.size();}
