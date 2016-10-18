@@ -3,7 +3,7 @@ from wrap_generator import *
 # The module
 module = module_(full_name = "comparison_tests", doc = "Short module with comparison tests")
 module.add_include("<triqs/py_converters/gf.hpp>")
-#module.add_include("<triqs/py_converters/multivar.hpp>")
+module.add_include("<triqs/py_converters/multivar.hpp>")
 module.add_include("<triqs/gfs/gf_tests.hpp>")
 module.add_using("namespace triqs::gfs")
 
@@ -12,9 +12,10 @@ import itertools
 descs= ['imfreq', 'refreq', 'imtime', 'retime', 'legendre']
 target_types =['matrix_valued', 'scalar_valued']
 
-### COMMENTED
 d_t = [(x,y) for x,y in itertools.product(descs, target_types)]
-#d_t.append(('cartesian_product<imfreq, imfreq>', 'tensor_valued<3>'))
+d_t.append(('cartesian_product<imfreq, imfreq>', 'tensor_valued<3>'))
+d_t.append(('cartesian_product<imtime, imtime, imtime>', 'tensor_valued<4>'))
+d_t.append(('cartesian_product<imfreq, imfreq, imfreq>', 'tensor_valued<4>'))
 
 for types, target_type in d_t:
   module.add_function(name = "assert_gfs_are_close",

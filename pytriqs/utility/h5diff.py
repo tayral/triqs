@@ -27,7 +27,7 @@ def compare(key, a, b, level, precision):
                 compare(key + '/'+ k, a[k], b[k], level + 1, precision)
 
         # The TRIQS object which are comparable starts here ....
-        elif t in [GfImFreq, GfImTime, GfReFreq, GfReTime, GfLegendre, GfImFreq_x_ImFreqTv3] :
+        elif t in [GfImFreq, GfImTime, GfReFreq, GfReTime, GfLegendre, GfImFreq_x_ImFreqTv3, GfImFreq_x_ImFreq_x_ImFreqTv4,  GfImTime_x_ImTime_x_ImTimeTv4] :
             assert_gfs_are_close(a,b,precision)
 
         elif t in [BlockGf]:
