@@ -44,7 +44,8 @@ def plot(self, opt_dict):
     if plot_type=="contourf":
      x = np.array([mp_comp(m) for m in self.mesh.components[0]])
      y = np.array([mp_comp(m) for m in self.mesh.components[1]])
-     z = np.transpose(self.data[:,:,0,0,0])
+     ll = len(self.data.shape)
+     z = np.transpose(self.data[:,:,0,0,0]) if ll==5 else np.transpose(self.data[:,:,0,0,0,0]) 
      zmin=np.amin(z.real)+np.amin(z.imag)*1j
      zmax=np.amax(z.real)+np.amax(z.imag)*1j
 
