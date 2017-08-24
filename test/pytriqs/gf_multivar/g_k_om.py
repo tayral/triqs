@@ -13,6 +13,9 @@ mprod_iw = MeshBrillouinZoneImFreq(mk, miw) # not used (just demo)
 mw=MeshReFreq(-5,5, 100)
 mprod = MeshBrillouinZoneReFreq(mk, mw)
 
+#test GfBrillouinZone
+G_k = GfBrillouinZone(mesh=mk, shape=[1,1])
+
 for m in mk:   print m
     
 nkmid=nk/2

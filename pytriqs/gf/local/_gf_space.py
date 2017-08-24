@@ -1,6 +1,11 @@
 from scipy.interpolate import griddata
 import numpy as np
 
+def init( mesh = None, shape = None, name = 'g'):
+    """
+    """
+    return (mesh, shape, (), name), {}
+
 def make_plottable(self, method="cubic", nk=50):
    ''' 
    :param method: cubic|nearest|linear
